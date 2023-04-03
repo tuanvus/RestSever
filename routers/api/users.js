@@ -15,14 +15,14 @@ router.post('/users', function (req, res, next) {
   console.log('log =' + req.body.FileBytes)
   return res.send(req.body.todo)
 })
-router.put('/users', async function (req, res, next) {
+router.put('/FindUser', async function (req, res, next) {
   console.log('log =' + req.body)
   await User.findOne({ email: req.body.user.email }).then((user) => {
     user.status = false
-    return res.send('thanh cong')
+    return res.json({ user: user.toAuthJSON() })
   })
 })
-router.post('/users/login', function (req, res, next) {
+router.post('/users/Login', function (req, res, next) {
   passport.authenticate('local', { session: false }, function (
     err,
     user,
@@ -34,32 +34,25 @@ router.post('/users/login', function (req, res, next) {
 
     if (user) {
 
-      // if (!user.status)
-      // {
         console.log("vao")
         user.status = true
         user.save()
         user.token = user.generateJWT()
         return res.json({ user: user.toAuthJSON() })
-      // }
-      //  else
-      //  {
-      //   console.log("k vao")
 
-      //   return res.status(515).json("da dang nhap")
-      //  }
     } else {
       return res.status(422).json(info)
     }
   })(req, res, next)
 })
-router.post('/users/logout', async function (req, res, next) {
+
+router.post('/users/Logout', async function (req, res, next) {
   console.log("logout");
   await User.updateOne({ ID: req.body.user.ID }, { status : false});
   return res.send(req.body)
 })
 
-router.post('/users/signup', function (req, res, next) {
+router.post('/users/Register', function (req, res, next) {
   console.log('vao')
   var user = new User()
 
@@ -76,34 +69,7 @@ router.post('/users/signup', function (req, res, next) {
     })
     .catch(next)
 })
-router.post('/users/join',async function (req, res, next) {
-  console.log(req.body.user.username)
- await Room.findOne({ IDroom: req.body.user.IDroom }).then((room) => {
-    console.log(' room' + room)
-    if (room.listPlayers.length < room.countPlayer) {
-      if (!room.listPlayers) {
-        const players = []
-        players.push(req.body.user.username)
-        room.listPlayers = players
-        return res.json('Update thanh cong')
-      } else room.listPlayers.push(req.body.user.username)
-      room.save()
-    } else console.log('room full')
-  })
-})
-router.post('/users/exitjoin',async function (req, res, next) {
-  console.log(req.body.user.username)
- await Room.findOne({ IDroom: req.body.user.IDroom }).then((room) => {
-    console.log(room)
-    var index = room.listPlayers.indexOf(req.body.user.username)
-    if (index === 0) {
-      console.log('xoas phong')
-      room.DeleteRoom(req.body.user.IDroom)
-    } else {
-      room.listPlayers.splice(index, 1)
-    }
-    room.save()
-  })
-})
+
+
 
 module.exports = router
