@@ -58,7 +58,7 @@ router.post('/users/Register', function (req, res, next) {
 
   user.username = req.body.user.username
   user.email = req.body.user.email
-  user.ID = req.body.user.ID
+  //user.ID = req.body.user.ID
   user.setPassword(req.body.user.password)
   user.status = false
 
