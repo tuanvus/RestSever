@@ -13,7 +13,7 @@ var UserSchema = new mongoose.Schema({
   hash: String,
   salt: String,
   status : Boolean,
-  ID : { type: Number, auto: true },
+  ID : { type: Number},
   heros:[String]
 }, {timestamps: true});
 

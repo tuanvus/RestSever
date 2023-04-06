@@ -51,23 +51,34 @@ router.post('/users/Logout', async function (req, res, next) {
   await User.updateOne({ ID: req.body.user.ID }, { status : false});
   return res.send(req.body)
 })
-
+const uuid = require('uuid');
 router.post('/users/Register', function (req, res, next) {
   console.log('vao')
   var user = new User()
 
   user.username = req.body.user.username
   user.email = req.body.user.email
-  //user.ID = req.body.user.ID
   user.setPassword(req.body.user.password)
   user.status = false
 
-  user
-    .save()
-    .then(function () {
-      return res.json({ user: user.toAuthJSON() })
+  // Tạo ID mới và kiểm tra xem nó có bị trùng lặp hay không
+  let newId = uuid.v4();
+  User.findOne({ID: newId})
+    .then(existingUser => {
+      if (existingUser) {
+        // Nếu ID đã tồn tại, tạo ID mới và kiểm tra lại
+        newId = uuid.v4();
+        return User.findOne({ID: newId});
+      } else {
+        // Nếu ID không tồn tại, sử dụng ID mới cho user mới
+        user.ID = newId;
+        return user.save();
+      }
     })
-    .catch(next)
+    .then(function (user) {
+      return res.json({ user: user.toAuthJSON() });
+    })
+    .catch(next);
 })
 
 
