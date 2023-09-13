@@ -12,7 +12,7 @@ router.post('/users/getall', async function (req, res, next) {
 })
 
 router.post('/users', function (req, res, next) {
-  console.log('log =' + req.body.FileBytes)
+  console.log('log =' + req.body)
   return res.send(req.body.todo)
 })
 router.put('/FindUser', async function (req, res, next) {
